@@ -1,41 +1,41 @@
-<project name="tsafe.makejar" default="makejar" basedir="."> 
+<project name="tsafe.makejar" default="makejar" basedir=".">
 
-	<target name ="makejar" description="Create a jar for the TSafe project">				
-		
+	<target name ="makejar" description="Create a jar for the TSafe project">
+
 		<delete dir="build"/>
-		
+
 		<mkdir dir="build"/>
-		
+
 		<copy todir="build/datafiles">
 			<fileset dir="datafiles/">
 				<include name="**"/>
 			</fileset>
 		</copy>
-		
+
 		<copy todir="build/lib">
 			<fileset dir="lib/">
 				<include name="figio.jar"/>
 			</fileset>
 		</copy>
-		
+
 		<copy todir="build">
 			<fileset dir=".">
 				<include name="tsafe.properties"/>
 			</fileset>
 		</copy>
-					
+
 		<jar jarfile="TSafe2d.jar" includes="**/*.class" basedir=".">
 			<manifest>
 				<attribute name="Main-Class" value="tsafe.main.Main"/>
 				<attribute name="Class-Path" value="lib/figio.jar"/>
 			</manifest>
-			
+
 			<fileset dir="">
 				<include name="tsafe/common_datastructures/_resources/**"/>
 			</fileset>
 		</jar>
-		
+
 		<move file="TSafe2d.jar" todir="build/"/>
-					
+
 	</target>
-</project> 
+</project>

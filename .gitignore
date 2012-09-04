@@ -7,7 +7,6 @@
 
 # These should really be global, but oh well :( #
 *.pydevproject
-.project
 .metadata
 bin/**
 tmp/**
@@ -17,8 +16,6 @@ tmp/**/*
 *.swp
 *~.nib
 local.properties
-.classpath
-.settings/
 .loadpath
 
 # External tool builders
@@ -32,3 +29,8 @@ local.properties
 
 # PDT-specific
 .buildpath
+
+# Exceptions #
+
+!feed_server.jar
+!lib/figio.jar
