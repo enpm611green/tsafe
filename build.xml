@@ -42,11 +42,14 @@
 	<target name="doc" description="Generate documentation">
 		<delete dir="doc"/>
 		<mkdir dir="doc"/>
+		<touch file="doc/.gitkeep"/>
 		<javadoc sourcepath="tsafe" destdir="doc"/>
 	</target>
 
 	<target name="clean" description="Delete all generated files">
 		<delete dir="build"/>
 		<delete dir="doc"/>
+		<mkdir dir="doc"/>
+		<touch file="doc/.gitkeep"/>
 	</target>
 </project>
