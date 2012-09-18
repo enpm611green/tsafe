@@ -32,11 +32,11 @@ Building a trusted computing base for air traffic control software.
 
 ## Installing TSAFE
 
-Extract the complete zip archive to a folder of your choice.
+Clone this repository to a directory of your choice.
 Importing the Project in Eclipse:
 
  1.  Start Eclipse
  2.  File -> Import
- 3.  Choose "Existing Project into Workspace" and click on "Next"
- 4.  Enter the path to the extracted archive and click on "Finish"
+ 3.  Choose `Existing Project into Workspace` and click on `Next`
+ 4.  Enter the path to the extracted archive and click on `Finish`
  5.  The project will appear in the Package Explorer under the name `Tsafe Project`
