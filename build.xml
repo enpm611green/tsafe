@@ -43,7 +43,11 @@
 		<delete dir="doc"/>
 		<mkdir dir="doc"/>
 		<touch file="doc/.gitkeep"/>
-		<javadoc sourcepath="tsafe" destdir="doc"/>
+		<javadoc sourcepath="tsafe" destdir="doc">
+			<fileset dir="tsafe">
+				<include name="**/*.java"/>
+			</fileset>
+		</javadoc>
 	</target>
 
 	<target name="clean" description="Delete all generated files">
