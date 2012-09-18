@@ -3,6 +3,6 @@
 	<classpathentry excluding="Makefile|datafiles/|default_tsafe.properties|doc/|env.mk|lib/|manifest|server/|tsafe.properties|tsafe/common_datastructures/_resources/|feeds/" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/figio.jar"/>
-	<classpathentry kind="lib" path="feed_server.jar"/>
+  <classpathentry kind="lib" path="lib/feed_server.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

@@ -15,6 +15,7 @@
 		<copy todir="build/lib">
 			<fileset dir="lib/">
 				<include name="figio.jar"/>
+				<include name="feed_server.jar"/>
 			</fileset>
 		</copy>
 
@@ -27,7 +28,7 @@
 		<jar jarfile="TSafe2d.jar" includes="**/*.class" basedir=".">
 			<manifest>
 				<attribute name="Main-Class" value="tsafe.main.Main"/>
-				<attribute name="Class-Path" value="lib/figio.jar"/>
+				<attribute name="Class-Path" value="lib/figio.jar lib/feed_server.jar"/>
 			</manifest>
 
 			<fileset dir="">
