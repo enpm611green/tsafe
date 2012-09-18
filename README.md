@@ -1,5 +1,6 @@
 # TSAFE
 
+[![Build Status](http://dev.mtmazilu.com/jenkins/job/tsafe/badge/icon)](http://dev.mtmazilu.com/jenkins/job/tsafe/)
 Building a trusted computing base for air traffic control software.
 
 
