@@ -137,8 +137,8 @@ class FlightMap extends JComponent implements ImageObserver {
         this.imageReady = false;
         super.prepareImage(mapImage, this);
         while(!this.imageReady) {
-        try {
-          Thread.sleep(50);
+          try {
+            Thread.sleep(50);
           } catch (InterruptedException e) {
             e.printStackTrace();
           }
