@@ -129,7 +129,7 @@ class Message {
         this.original = st;
     
         /**
-         * Each ASDI message consists of five components.Ê Ê
+         * Each ASDI message consists of five components.
          * 1. Sequence Number (4 bytes) 
          * 2. Date-time stamp (8 bytes) 
          * 3. Facility identifier (4 bytes) 
