@@ -40,3 +40,11 @@ Importing the Project in Eclipse:
  3.  Choose `General` -> `Existing Projects into Workspace` and click on `Next`
  4.  Enter the path to the cloned repository and click on `Finish`
  5.  The project will appear in the Package Explorer under the name `Tsafe Project`
+
+
+## Running TSAFE from the CLI
+
+Build it and run it.
+
+    ant
+    java -jar build/TSafe2d.jar
