@@ -5,7 +5,7 @@ Building a trusted computing base for air traffic control software.
 
 ## What You Need
 
-* The J2SE Software Development Kit (SDK) 5.0 or higher
+* [The Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 * [Eclipse IDE for Java Developers](http://www.eclipse.org/downloads)
 
 
