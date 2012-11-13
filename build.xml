@@ -8,7 +8,8 @@
   <property name="jar.dir"      value="${build.dir}/jar"/>
   <property name="lib.dir"      value="lib"/>
   <property name="doc.dir"      value="doc"/>
-  <property name="data.dir"     value="${build.dir}/datafiles"/>
+  <property name="data.dir"     value="datafiles"/>
+  <property name="feeds.dir"    value="feeds"/>
 
   <property name="main-class"   value="tsafe.main.Main"/>
 
@@ -35,8 +36,14 @@
 
     <mkdir dir="${jar.dir}"/>
 
-    <copy todir="${data.dir}">
-      <fileset dir="datafiles/">
+    <copy todir="${build.dir}/${data.dir}">
+      <fileset dir="${data.dir}/">
+        <include name="**"/>
+      </fileset>
+    </copy>
+
+    <copy todir="${build.dir}/${feeds.dir}">
+      <fileset dir="${feeds.dir}/">
         <include name="**"/>
       </fileset>
     </copy>
@@ -65,12 +72,12 @@
     </javadoc>
   </target>
 
-  <target name="clean-build" depends="clean,jar"/>
+  <target name="clean-build" depends="clean,jar" description="Perform a clean build"/>
 
-  <target name="main" depends="clean,run"/>
+  <target name="main" depends="clean,run" description="Clean build and run"/>
 
   <target name="run" description="Run TSafe" depends="jar">
-    <java classname="${main-class}" fork="true">
+    <java classname="${main-class}" fork="true" dir="${build.dir}">
       <classpath>
         <path refid="classpath"/>
         <path location="${jar.dir}/${ant.project.name}.jar"/>
@@ -78,7 +85,7 @@
     </java>
   </target>
 
-  <target name="junit" depends="jar">
+  <target name="junit" depends="jar" description="Run all the junit tests">
     <junit printsummary="yes">
       <classpath>
         <path refid="classpath"/>
