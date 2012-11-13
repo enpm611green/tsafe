@@ -1,12 +1,14 @@
 package tsafe.client;
 
+import java.util.Collection;
+
 import tsafe.common_datastructures.LatLonBounds;
 import tsafe.common_datastructures.client_server_communication.ComputationResults;
 import tsafe.common_datastructures.client_server_communication.UserParameters;
 import tsafe.server.ServerInterface;
 
 /**
- * @author Christopher Ackermann
+ * 
  * 
  * An Interface for clients that provides the methods, necessary in order to
  * communicate with the server component. All comunication to classes in the
@@ -32,12 +34,24 @@ public abstract class ClientInterface extends Thread {
 	 * and that are used for calculating the flights.
 	 */
 	protected UserParameters parameters;
+	
+	/**
+	 * Stores the Show Options for flights, routes, trajectories ect
+	 */
+	protected ShowOptions showOptions;
+	
+	/**
+	 * Stores the selected flights by the user
+	 */
+	protected SelectedFlights selectedFlights;
 
 	//****************************************************************
 
-	public ClientInterface(ServerInterface server) {
+	public ClientInterface(ServerInterface server, UserParameters params, ShowOptions showOpt, SelectedFlights selFlights) {
 		this.server = server;
-		this.parameters = new UserParameters();
+		this.parameters = params;
+		this.showOptions = showOpt;
+		this.selectedFlights = selFlights;
 		bounds = new LatLonBounds(0,0,0,0);
 	}
 

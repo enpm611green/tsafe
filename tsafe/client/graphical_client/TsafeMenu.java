@@ -126,7 +126,152 @@ class TsafeMenu extends JMenuBar implements ItemListener {
 			throw new RuntimeException("Invalid Menu Item Changed");
 		}
 	}
+	
+	/**
+	 * Updates the Menu Items within the TsafeMenu, in case any options has changed.
+	 * <p>
+	 * It is possible for the user to update the options within the command prompt, or other
+	 * future clients.  This will refresh the the selected menu items if there is a change.
+	 * <p>
+	 * We only are changing selecting menu items if they have changed, there is no sense
+	 * in firing off selection changed events if no change has occurred.
+	 * @param fixesText 
+	 * @param flightsText
+	 * @param routesText
+	 * @param trajectoriesText
+	 */
+	public void updateMenuItems(String fixesText,
+			String flightsText, String routesText,
+			String trajectoriesText)
+	{
+		updateFixesMenu(fixesText);
+		
+		updateFlightMenu(flightsText);
+		
+		updateRoutesMenu(routesText);
+		
+		updateTajMenu(trajectoriesText);
+		
+		this.updateUI();
+	}
+	
+	/**
+	 * Updates the fixes menu item which will select items if the user option
+	 * changes outside of the Map Window
+	 * @param fixesText
+	 */
+	private void updateFixesMenu(String fixesText)
+	{
+		if(fixesText.equals(ALL_TEXT)){
+			if(!fixesAll.isSelected())  //We only want to update it if it has changed.
+				fixesAll.setSelected(true);
+		}
+		else if(fixesText.equals(NONE_TEXT)){
+			if(!fixesNone.isSelected())
+				fixesNone.setSelected(false);
+		}
+	}
+	/**
+	 * Updates the Flight Menu item to select item if the user option changed outside
+	 * of the map window.
+	 * <p>
+	 * This happens when the user changes the User Options using the command prompt
+	 * @param flightsText
+	 */
+	private void updateFlightMenu(String flightsText)
+	{
+		if(flightsText.equals(ALL_TEXT)){
+			if(!flightsAll.isSelected())
+				flightsAll.setSelected(true);
+		}
+		else if(flightsText.equals(SELECTED_TEXT)){
+			if(!flightsSelected.isSelected())
+				flightsSelected.setSelected(true);
+		}
+		else if(flightsText.equals(WITH_PLAN_TEXT)){
+			if(!flightsWithPlan.isSelected())
+				flightsWithPlan.setSelected(true);
+		}
+		else if(flightsText.equals(CONFORMING_TEXT)){
+			if(!flightsConforming.isSelected())
+				flightsConforming.setSelected(true);
+		}
+		else if(flightsText.equals(BLUNDERING_TEXT)){
+			if(!flightsBlundering.isSelected())
+				flightsBlundering.setSelected(true);
+		}
+		else if(flightsText.equals(NONE_TEXT)){
+			if(!flightsNone.isSelected())
+				flightsNone.setSelected(true);
+		}
+	}
 
+	/**
+	 * Updates the Routes Menu item to select item if the user option changed outside
+	 * of the map window.
+	 * <p>
+	 * This happens when the user changes the User Options using the command prompt
+	 * @param routesText
+	 */
+	private void updateRoutesMenu(String routesText)
+	{
+		if(routesText.equals(ALL_TEXT)){
+			if(!routesAll.isSelected())
+				routesAll.setSelected(true);
+		}
+		else if(routesText.equals(SELECTED_TEXT)){
+			if(!routesSelected.isSelected())
+				routesSelected.setSelected(true);
+		}
+		else if(routesText.equals(CONFORMING_TEXT)){
+			if(!routesConforming.isSelected())
+				routesConforming.setSelected(true);
+		}
+		else if(routesText.equals(BLUNDERING_TEXT)){
+			if(!routesBlundering.isSelected())
+				routesBlundering.setSelected(true);
+		}
+		else if(routesText.equals(NONE_TEXT)){
+			if(!routesNone.isSelected())
+				routesNone.setSelected(true);
+		}
+	}
+	
+	/**
+	 * Updates the Trajectory Menu item to select item if the user option changed outside
+	 * of the map window.
+	 * <p>
+	 * This happens when the user changes the User Options using the command prompt
+	 * @param trajText
+	 */
+	private void updateTajMenu(String trajText)
+	{
+		if(trajText.equals(ALL_TEXT)){
+			if(!trajsAll.isSelected())
+				trajsAll.setSelected(true);
+		}
+		else if(trajText.equals(SELECTED_TEXT)){
+			if(!trajsSelected.isSelected())
+				trajsSelected.setSelected(true);
+		}
+		else if(trajText.equals(WITH_PLAN_TEXT)){
+			if(!trajsWithPlan.isSelected())
+				trajsWithPlan.setSelected(true);
+		}
+		else if(trajText.equals(CONFORMING_TEXT)){
+			if(!trajsConforming.isSelected())
+				trajsConforming.setSelected(true);
+		}
+		else if(trajText.equals(BLUNDERING_TEXT)){
+			if(!trajsBlundering.isSelected())
+				trajsBlundering.setSelected(true);
+		}
+		else if(trajText.equals(NONE_TEXT)){
+			if(!trajsNone.isSelected())
+				trajsNone.setSelected(true);
+		}
+	}
+	
 	/**
 	 * Construct the show menu
 	 */

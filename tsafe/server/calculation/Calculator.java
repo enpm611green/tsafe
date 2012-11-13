@@ -5,7 +5,7 @@ import tsafe.common_datastructures.Point2D;
 import tsafe.common_datastructures.PointXY;
 
 /**
- * @author Christopher Ackermann
+ * 
  * 
  * Contains method to compute more sophisticated calculation such as converting
  * to certain coordinates.

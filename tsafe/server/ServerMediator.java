@@ -22,7 +22,7 @@ import tsafe.server.parser.asdi.ASDIParser;
 import tsafe.server.server_gui.ConfigConsole;
 
 /**
- * @author Christopher Ackermann
+ * 
  * 
  * Manages the communication between the logical components of the server
  * component. It also provides an interface for the communication with the

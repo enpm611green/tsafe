@@ -22,11 +22,17 @@ package tsafe.main;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.io.File;
+import java.util.Collection;
+import java.util.Vector;
 
 import tsafe.Feed;
 import tsafe.client.ClientInterface;
+import tsafe.client.SelectedFlights;
+import tsafe.client.ShowOptions;
 import tsafe.client.graphical_client.GraphicalClient;
+import tsafe.client.text_client.TextClient;
 import tsafe.common_datastructures.TSAFEProperties;
+import tsafe.common_datastructures.client_server_communication.UserParameters;
 import tsafe.server.ServerInterface;
 import tsafe.server.server_gui.SplashScreen;
 import tsafe.server.server_gui.utils.WaitCursorEventQueue;
@@ -71,7 +77,14 @@ public class Main {
 	public void start() {
 
 		ServerInterface server;
-
+		
+		/* KS New Code: 
+		Added User parameters b/c it has to interact with
+		both the Graphical and Text client at the same time */
+		UserParameters userParams = new UserParameters();
+		ShowOptions showOptions = new ShowOptions();
+		SelectedFlights selFlights = new SelectedFlights();
+		
 		long hideSplashTime = 0;
 
 		// CASE #1: Startup using splash screen.
@@ -85,9 +98,14 @@ public class Main {
 		// Start the server.
 		server = new ServerInterface();
 
+		
 		// Create the clients
-		ClientInterface client = new GraphicalClient(server);
+		ClientInterface client = new GraphicalClient(server,userParams,showOptions,selFlights);
 		server.attachObserver(client);
+		
+		// KS New Code
+		ClientInterface client2 = new TextClient(server,userParams,showOptions,selFlights);
+		server.attachObserver(client2);
 
 		if (TSAFEProperties.getShowSplashScreenFlag()) {
 			// Wait for time to expire.

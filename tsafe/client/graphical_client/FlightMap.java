@@ -34,6 +34,9 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 
+import tsafe.client.SelectedFlights;
+import tsafe.client.ShowOptions;
+import tsafe.client.ShowOptions.Options;
 import tsafe.common_datastructures.Fix;
 import tsafe.common_datastructures.Flight;
 import tsafe.common_datastructures.LatLonBounds;
@@ -47,15 +50,8 @@ import tsafe.common_datastructures.Trajectory;
 class FlightMap extends JComponent implements ImageObserver {
     
 	static final long serialVersionUID = 42L;
-	/**
-     * Show options
-     */
-    public static final int SHOW_ALL        = 0;
-    public static final int SHOW_SELECTED   = 1;
-    public static final int SHOW_WITH_PLAN  = 2;
-    public static final int SHOW_CONFORMING = 3;
-    public static final int SHOW_BLUNDERING = 4;
-    public static final int SHOW_NONE       = 5;
+
+	private ShowOptions showOpt;
     
     /**
      * Drawing Constants
@@ -113,25 +109,22 @@ class FlightMap extends JComponent implements ImageObserver {
     private Collection blunders = new LinkedList();
     private Map flight2TrajMap = new HashMap(); 
 
-    /**
-     * Flags triggering the display of certain flight pane items
-     */
-    private int showFixes  = SHOW_ALL, showFlights      = SHOW_ALL,
-                showRoutes = SHOW_ALL, showTrajectories = SHOW_ALL;
 
     /**
      * The selected flights
      */
-    private Collection selectedFlights = new Vector();
+    private SelectedFlights selectedFlights;
 
     /**
      * Construct a flight map with a given map image, bounds, and fixes
      */
-    public FlightMap(Image mapImage, LatLonBounds bounds, Collection fixes) {
+    public FlightMap(Image mapImage, LatLonBounds bounds, Collection fixes, ShowOptions showOptions, SelectedFlights selFlights) {
         super();
         this.mapImage = mapImage;
         this.bounds   = bounds;
         this.fixes    = fixes;
+        this.showOpt = showOptions;
+        this.selectedFlights = selFlights;
 
         // Prepare the map image
         this.imageReady = false;
@@ -166,13 +159,6 @@ class FlightMap extends JComponent implements ImageObserver {
     }
 
     /**
-     * Set the selected flight
-     */
-    public void setSelectedFlights(Collection selectedFlights) {
-        this.selectedFlights = selectedFlights;
-    }
-
-    /**
      * Tells the flight pane its stored flight data
      * has changed and must perform an updated repaint
      */
@@ -193,26 +179,6 @@ class FlightMap extends JComponent implements ImageObserver {
     /** Sets the flight trajectory map in the pane */
     public void setFlightTrajectoryMap(Map flight2TrajMap) {
         this.flight2TrajMap = new HashMap(flight2TrajMap);
-    }
-
-    /** Turns on or off the painting of fixes */
-    public void setShowFixes(int showFixes) {
-        this.showFixes = showFixes;
-    }
-
-     /** Turns on or off the painting of flights */
-    public void setShowFlights(int showFlights) {
-        this.showFlights = showFlights;
-    }
-
-     /** Turns on or off the painting of routes */
-    public void setShowRoutes(int showRoutes) {
-        this.showRoutes = showRoutes;
-    }
-
-     /** Turns on or off the painting of trajectories */
-    public void setShowTrajectories(int showTrajectories) {
-        this.showTrajectories = showTrajectories;
     }
 
     /**
@@ -254,10 +220,16 @@ class FlightMap extends JComponent implements ImageObserver {
     }
 
     private void paintUpdate(Graphics g) {
+    	
+    	ShowOptions.Options showFixes = this.showOpt.getShowFixesOption();
+    	ShowOptions.Options showFlights = this.showOpt.getShowFlightsOption();
+    	ShowOptions.Options showTrajectories = this.showOpt.getShowTrajectoriesOption();
+    	ShowOptions.Options showRoutes = this.showOpt.getShowRoutesOption();
+    	
         /**
          * Draw fixes
          */
-        if (showFixes == SHOW_ALL) {
+        if (showFixes == Options.ShowAll) {
             g.drawImage(mapFixesImage, 0, 0, this.getWidth(), this.getHeight(), this);
         } else /* if (showFixes == SHOW_NONE) */ {
             g.drawImage(mapImage, 0, 0, this.getWidth(), this.getHeight(), this);
@@ -273,14 +245,14 @@ class FlightMap extends JComponent implements ImageObserver {
             boolean hasFlightPlan = flight.getFlightPlan() != null;
             boolean isBlundering = hasFlightPlan && blunders.contains(flight);
             boolean isConforming = hasFlightPlan && !isBlundering;
-            boolean isSelected = selectedFlights.contains(flight);
+            boolean isSelected = selectedFlights.getSelectedFlights().contains(flight);
 
             // Draw the flight if . . .
-            if ((showFlights == SHOW_ALL) ||
-                (showFlights == SHOW_WITH_PLAN  && hasFlightPlan) ||
-                (showFlights == SHOW_CONFORMING && isConforming) ||
-                (showFlights == SHOW_BLUNDERING && isBlundering) ||
-                (showFlights == SHOW_SELECTED   && isSelected)) {
+            if ((showFlights == Options.ShowAll) ||
+                (showFlights == Options.ShowWithPlan  && hasFlightPlan) ||
+                (showFlights == Options.ShowConforming && isConforming) ||
+                (showFlights == Options.ShowBlundering && isBlundering) ||
+                (showFlights == Options.ShowSelected   && isSelected)) {
                 
                 /** Set the color of the flight and draw it */
                 if      (!hasFlightPlan) g.setColor(NO_PLAN_COLOR);
@@ -290,21 +262,21 @@ class FlightMap extends JComponent implements ImageObserver {
     
                 // Draw the route if . . .
                 if (hasFlightPlan &&
-                    ((showRoutes == SHOW_ALL) ||
-                     (showRoutes == SHOW_CONFORMING && isConforming) ||
-                     (showRoutes == SHOW_BLUNDERING && isBlundering) ||
-                     (showRoutes == SHOW_SELECTED   && isSelected))) {
+                    ((showRoutes == Options.ShowAll) ||
+                     (showRoutes == Options.ShowConforming && isConforming) ||
+                     (showRoutes == Options.ShowBlundering && isBlundering) ||
+                     (showRoutes == Options.ShowSelected   && isSelected))) {
                     /** Set the color of the route and draw it */
                     g.setColor(ROUTE_COLOR);
                     drawRoute(g, flight.getFlightPlan().getRoute());
                 }
 
                 // Draw the trajectory if . . .
-                if ((showTrajectories == SHOW_ALL) ||
-                    (showTrajectories == SHOW_WITH_PLAN  && hasFlightPlan) ||
-                    (showTrajectories == SHOW_CONFORMING && isConforming)  ||
-                    (showTrajectories == SHOW_BLUNDERING && isBlundering)  ||
-                    (showTrajectories == SHOW_SELECTED   && isSelected)) {
+                if ((showTrajectories == Options.ShowAll) ||
+                    (showTrajectories == Options.ShowWithPlan  && hasFlightPlan) ||
+                    (showTrajectories == Options.ShowConforming && isConforming)  ||
+                    (showTrajectories == Options.ShowBlundering && isBlundering)  ||
+                    (showTrajectories == Options.ShowSelected    && isSelected)) {
                      /** Set the color of the trajectory and draw it */
                     g.setColor(TRAJ_COLOR);
                     drawTrajectory(g, (Trajectory)flight2TrajMap.get(flight));

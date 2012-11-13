@@ -10,7 +10,7 @@ import tsafe.common_datastructures.client_server_communication.ComputationResult
 import tsafe.common_datastructures.client_server_communication.UserParameters;
 
 /**
- * @author Christopher Ackermann
+ *
  * 
  * Interface for the communication with the clients. It provides the methods to
  * meet the requirements of a subject in an Observer Pattern.

@@ -48,11 +48,17 @@ class FlightList extends JList {
 
     /**
      * Sets the flights to be shown in the list
+     * <p>
+     * We added functionality to pass in the selected flights.  This is because in some cases
+     * the flights are selected using a different client, and when the Map Window
+     * is updated we use the new selection list to select which items.
      */
-    public void setFlights(Collection flights) {
+    public void setFlights(Collection flights,Collection selectedFlights) {
         // Remember all the flights that were selected beforehand
-        Object[] selected = super.getSelectedValues();
+        //Object[] selected = super.getSelectedValues();
 
+    	Object[] selected = selectedFlights.toArray();
+    	
         // Sort the flights and set the data of the JList
         Object[] newFlights = flights.toArray();
         Arrays.sort(newFlights, FLIGHT_COMPARATOR);

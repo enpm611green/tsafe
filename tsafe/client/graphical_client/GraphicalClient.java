@@ -20,8 +20,12 @@
 package tsafe.client.graphical_client;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Vector;
 
 import tsafe.client.ClientInterface;
+import tsafe.client.SelectedFlights;
+import tsafe.client.ShowOptions;
 import tsafe.common_datastructures.LatLonBounds;
 import tsafe.common_datastructures.TSAFEProperties;
 import tsafe.common_datastructures.client_server_communication.ComputationResults;
@@ -41,8 +45,8 @@ public class GraphicalClient extends ClientInterface {
 	/**
 	 * Construct a GraphicalClient
 	 */
-	public GraphicalClient(ServerInterface server) {
-		super(server);
+	public GraphicalClient(ServerInterface server, UserParameters userParams,ShowOptions showOpt, SelectedFlights selFlights) {
+		super(server, userParams,showOpt,selFlights);
 		bounds = TSAFEProperties.getLatLonBounds();
 	}
 
@@ -73,6 +77,13 @@ public class GraphicalClient extends ClientInterface {
 	}
 
 	/**
+	 * @return Returns the Show Flight, Tract, routes ect options
+	 */
+	public ShowOptions getShowOptions() {
+		return this.showOptions;
+	}
+	
+	/**
 	 * Interface method for the client for reading the fixes.
 	 * 
 	 * @return All fixes, stored in the database.
@@ -102,9 +113,20 @@ public class GraphicalClient extends ClientInterface {
 	public LatLonBounds getBounds() {
 		return bounds;
 	}
+	
+	/**
+	 * Gets the selected flights
+	 * @return
+	 */
+	public SelectedFlights getSelectedFlights(){
+		return this.selectedFlights;
+	}	
 
 	public void testing() {
-		ClientInterface client = new GraphicalClient(this.server);
+		UserParameters userParam = new UserParameters();
+		ShowOptions showOpt = new ShowOptions();
+		SelectedFlights selFlights = new SelectedFlights();
+		ClientInterface client = new GraphicalClient(this.server,userParam,showOpt,selFlights);
 		client.setBounds(bounds);
 		client.run();
 	}

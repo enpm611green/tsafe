@@ -13,7 +13,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -21,13 +23,16 @@ import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import tsafe.client.SelectedFlights;
+import tsafe.client.ShowOptions;
+import tsafe.client.ShowOptions.Options;
+import tsafe.common_datastructures.Flight;
 import tsafe.common_datastructures.LatLonBounds;
 import tsafe.common_datastructures.TSAFEProperties;
 import tsafe.common_datastructures.client_server_communication.ComputationResults;
 
 /**
- * @author cackermann
- * 
+ *  
  * To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
@@ -45,38 +50,33 @@ public class GraphicalWindow extends JFrame implements ListSelectionListener,
 	private FlightMap flightMap;
 
 	/**
+	 * The Options on what type of flights, tract, routes ect to display
+	 */
+	private ShowOptions showOpt;
+	
+	
+	/**
 	 * List of flights to select from
 	 */
 	private FlightList flightList;
+	
+	/**
+	 * The flights that are selected
+	 */
+	private SelectedFlights selectedFlights;
 
 	/**
 	 * Manages the communication to the server
 	 */
 	private GraphicalClient client;
+	
+	private TsafeMenu tSafeMenu; 
 
 	/**
 	 * Location of split pane divider
 	 */
 	private static final int SPLIT_DIVIDER_LOCATION = 100;
 
-	/**
-	 * Show Menu Initial Selections for graphical client.
-	 */
-	private static final int INITIAL_SHOW_FIXES_OPTION = FlightMap.SHOW_NONE;
-
-	private static final int INITIAL_SHOW_FLIGHTS_OPTION = FlightMap.SHOW_ALL;
-
-	private static final int INITIAL_SHOW_ROUTES_OPTION = FlightMap.SHOW_ALL;
-
-	private static final int INITIAL_SHOW_TRAJS_OPTION = FlightMap.SHOW_WITH_PLAN;
-
-	private static final String INITIAL_SHOW_FIXES_TEXT = showOptionToText(INITIAL_SHOW_FIXES_OPTION);
-
-	private static final String INITIAL_SHOW_FLIGHTS_TEXT = showOptionToText(INITIAL_SHOW_FLIGHTS_OPTION);
-
-	private static final String INITIAL_SHOW_ROUTES_TEXT = showOptionToText(INITIAL_SHOW_ROUTES_OPTION);
-
-	private static final String INITIAL_SHOW_TRAJS_TEXT = showOptionToText(INITIAL_SHOW_TRAJS_OPTION);
 
 	/**
 	 *  
@@ -88,21 +88,29 @@ public class GraphicalWindow extends JFrame implements ListSelectionListener,
 		//		 Create a parameters dialog box
 		this.paramsDialog = new ParametersDialog(this, this.client
 				.getParameters());
-
+		this.showOpt = this.client.getShowOptions();
+				
+		this.selectedFlights = client.getSelectedFlights();
+		
+		//Added a title so the user can tell the difference between the two windows
+		this.setTitle("Tsafe Map Window");
+		
 		// Create the background image.
 		Image bgImage = Toolkit.getDefaultToolkit().getImage(
 				TSAFEProperties.getBackgroundImage());
 
-		// Create a flight map
-		this.flightMap = makeFlightMap(bgImage, this.client.getBounds(),
-				this.client.getFixes());
+		// Create a flight map.  We removed getFlightMap function b/c we no longer are using static properties
+		this.flightMap = new FlightMap(bgImage, this.client.getBounds(), 
+				this.client.getFixes(),this.showOpt,this.selectedFlights );
+
 
 		// Create a list of flights and add the client as a listener
 		this.flightList = new FlightList();
 		flightList.addListSelectionListener(this);
 
+		this.tSafeMenu = makeTsafeMenu(this);
 		// Build the content pane
-		setJMenuBar(makeTsafeMenu(this));
+		setJMenuBar(this.tSafeMenu);
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				new JScrollPane(flightList), flightMap);
 		splitPane.setDividerLocation(SPLIT_DIVIDER_LOCATION);
@@ -134,19 +142,19 @@ public class GraphicalWindow extends JFrame implements ListSelectionListener,
 	 * Called by TsafeMenu menu when recognizes menu events
 	 */
 	void showMenuChanged(String submenu, String submenuItem) {
-		int showOption = showTextToOption(submenuItem);
+		Options showOption = this.getOptionFromString(submenuItem);
 
 		if (submenu.equals(TsafeMenu.FIXES_TEXT))
-			flightMap.setShowFixes(showOption);
+			this.showOpt.setShowFixesOption(showOption);
 
 		else if (submenu.equals(TsafeMenu.FLIGHTS_TEXT))
-			flightMap.setShowFlights(showOption);
+			this.showOpt.setShowFlightsOption(showOption);
 
 		else if (submenu.equals(TsafeMenu.ROUTES_TEXT))
-			flightMap.setShowRoutes(showOption);
+			this.showOpt.setShowRoutesOption(showOption);
 
 		else if (submenu.equals(TsafeMenu.TRAJS_TEXT))
-			flightMap.setShowTrajectories(showOption);
+			this.showOpt.setShowTrajectoriesOption(showOption);
 
 		flightMap.updateNeeded();
 		repaint();
@@ -156,10 +164,14 @@ public class GraphicalWindow extends JFrame implements ListSelectionListener,
 	 * List selection event handler When the selected item has changed,
 	 */
 	public void valueChanged(ListSelectionEvent e) {
-		Collection selectedFlights = flightList.getSelectedFlights();
-		flightMap.setSelectedFlights(selectedFlights);
-		flightMap.updateNeeded();
-		repaint();
+		Collection selFlights = flightList.getSelectedFlights();
+		if(!selFlights.isEmpty() && !this.selectedFlights.getSelectedFlights().equals(selFlights))
+		{
+			this.selectedFlights.setSelectedFlights(selFlights);
+			
+			flightMap.updateNeeded();
+			repaint();
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -173,69 +185,72 @@ public class GraphicalWindow extends JFrame implements ListSelectionListener,
 			this.paramsDialog.showTrajectorySynthesizerParameters();
 	}
 
-	private void refreshWindow() {
-		// Parameters changed, update flight map
-		flightMap.updateNeeded();
-		flightMap.repaint();
+	private void refreshTsafeMenu()
+	{
+		String showFixesText = showOptionToText(this.showOpt.getShowFixesOption());
+		String showFlightsText = showOptionToText(this.showOpt.getShowFlightsOption());
+		String showRoutesText = showOptionToText(this.showOpt.getShowRoutesOption());
+		String showTrajectoriesText = showOptionToText(this.showOpt.getShowTrajectoriesOption());
+		
+		this.tSafeMenu.updateMenuItems(showFixesText, showFlightsText, showRoutesText, showTrajectoriesText);
 	}
 
-	//	 PRIVATE HELPER METHODS
-
-	private static FlightMap makeFlightMap(Image mapImage, LatLonBounds bounds,
-			Collection fixes) {
-		FlightMap flightMap = new FlightMap(mapImage, bounds, fixes);
-		flightMap.setShowFixes(INITIAL_SHOW_FIXES_OPTION);
-		flightMap.setShowFlights(INITIAL_SHOW_FLIGHTS_OPTION);
-		flightMap.setShowRoutes(INITIAL_SHOW_ROUTES_OPTION);
-		flightMap.setShowTrajectories(INITIAL_SHOW_TRAJS_OPTION);
-		return flightMap;
+	private TsafeMenu makeTsafeMenu(GraphicalWindow client) {
+		
+		String showFixesText = showOptionToText(this.showOpt.getShowFixesOption());
+		String showFlightsText = showOptionToText(this.showOpt.getShowFlightsOption());
+		String showRoutesText = showOptionToText(this.showOpt.getShowRoutesOption());
+		String showTrajectoriesText = showOptionToText(this.showOpt.getShowTrajectoriesOption());
+		
+		return new TsafeMenu(client, showFixesText,
+				showFlightsText, showRoutesText,
+				showTrajectoriesText);
 	}
 
-	private static TsafeMenu makeTsafeMenu(GraphicalWindow client) {
-		return new TsafeMenu(client, INITIAL_SHOW_FIXES_TEXT,
-				INITIAL_SHOW_FLIGHTS_TEXT, INITIAL_SHOW_ROUTES_TEXT,
-				INITIAL_SHOW_TRAJS_TEXT);
-	}
-
-	private static String showOptionToText(int showOption) {
+	private String showOptionToText(ShowOptions.Options showOption) {
+		
 		switch (showOption) {
-		case FlightMap.SHOW_ALL:
+		case ShowAll:
 			return TsafeMenu.ALL_TEXT;
-		case FlightMap.SHOW_SELECTED:
+		case ShowSelected:
 			return TsafeMenu.SELECTED_TEXT;
-		case FlightMap.SHOW_WITH_PLAN:
+		case ShowWithPlan:
 			return TsafeMenu.WITH_PLAN_TEXT;
-		case FlightMap.SHOW_CONFORMING:
+		case ShowConforming:
 			return TsafeMenu.CONFORMING_TEXT;
-		case FlightMap.SHOW_BLUNDERING:
+		case ShowBlundering:
 			return TsafeMenu.BLUNDERING_TEXT;
-		case FlightMap.SHOW_NONE:
+		case ShowNone:
 			return TsafeMenu.NONE_TEXT;
 		}
 
 		throw new RuntimeException("Invalid Show Option");
 	}
 
-	private static int showTextToOption(String showText) {
+	private static ShowOptions.Options getOptionFromString(String showText) {
+		
 		if (showText.equals(TsafeMenu.ALL_TEXT))
-			return FlightMap.SHOW_ALL;
+			return ShowOptions.Options.ShowAll;
 		if (showText.equals(TsafeMenu.SELECTED_TEXT))
-			return FlightMap.SHOW_SELECTED;
+			return ShowOptions.Options.ShowSelected;
 		if (showText.equals(TsafeMenu.WITH_PLAN_TEXT))
-			return FlightMap.SHOW_WITH_PLAN;
+			return ShowOptions.Options.ShowWithPlan;
 		if (showText.equals(TsafeMenu.CONFORMING_TEXT))
-			return FlightMap.SHOW_CONFORMING;
+			return ShowOptions.Options.ShowConforming;
 		if (showText.equals(TsafeMenu.BLUNDERING_TEXT))
-			return FlightMap.SHOW_BLUNDERING;
+			return ShowOptions.Options.ShowBlundering;
 		if (showText.equals(TsafeMenu.NONE_TEXT))
-			return FlightMap.SHOW_NONE;
+			return ShowOptions.Options.ShowNone;
 
 		throw new RuntimeException("Invalid Show Text");
 	}
 
 	public void updateWindow(ComputationResults results) {
 
-		flightList.setFlights(results.getFlights());
+		/* We pass in the current flights to re-populate the list,
+		   we also pass in the selected flights so that the flights that are selected
+		   can be updated, even if they were selected using a different client */
+		flightList.setFlights(results.getFlights(),this.selectedFlights.getSelectedFlights());
 
 		// Update the flight map
 		synchronized (flightMap) {
@@ -244,6 +259,10 @@ public class GraphicalWindow extends JFrame implements ListSelectionListener,
 			flightMap.setFlightTrajectoryMap(results.getFlight2TrajectoryMap());
 		}
 
+		/* We need to update the selected flights and the tsafe menu, if the
+		   user used the command prompt to change options or selected flights */
+		refreshTsafeMenu();
+		
 		flightMap.updateNeeded();
 		repaint();
 	}
