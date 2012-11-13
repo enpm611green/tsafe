@@ -13,6 +13,7 @@
 
   <property name="main-class"   value="tsafe.main.Main"/>
 
+  <path id="application" location="${jar.dir}/${ant.project.name}.jar"/>
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
   </path>
@@ -80,7 +81,7 @@
     <java classname="${main-class}" fork="true" dir="${build.dir}">
       <classpath>
         <path refid="classpath"/>
-        <path location="${jar.dir}/${ant.project.name}.jar"/>
+        <path refid="application"/>
       </classpath>
     </java>
   </target>
