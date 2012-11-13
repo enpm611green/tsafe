@@ -17,10 +17,10 @@ Building a trusted computing base for air traffic control software.
  *  `lib/`
     Libraries needed to run TSAFE.
 
- *  `tsafe/`
+ *  `src/`
     The source code for TSAFE.
 
- *  `tsafe/common_datastructures/_resources/`
+ *  `src/tsafe/common_datastructures/_resources/`
     Some essential files to start TSAFE. (splash screen, icon..)
 
  *  `.classpath, .project, build.xml`
@@ -47,4 +47,5 @@ Importing the Project in Eclipse:
 Build it and run it.
 
     ant
-    java -jar build/TSafe2d.jar
+
+Wasn't that easy?
