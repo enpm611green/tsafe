@@ -287,7 +287,7 @@ class FeedSourcePreferencePanel extends PreferencePanel {
         
         
          // Set the instructions.
-        JTextArea instructions = new JTextArea("This is the main directory where you store your FIG files.  " +
+        JTextArea instructions = new JTextArea("This is the main directory where you store your FIG files. " +
                                                "Anytime you are asked to select a FIG file, you will start " +
                                                "out in this directory.", 3, 40);
         instructions.setOpaque(false);
