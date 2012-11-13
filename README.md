@@ -1,5 +1,6 @@
 # TSAFE
 
+[![Build Status](https://secure.travis-ci.org/enpm611green/tsafe.png?branch=master)](https://travis-ci.org/enpm611green/tsafe)
 Building a trusted computing base for air traffic control software.
 
 
@@ -24,7 +25,7 @@ Building a trusted computing base for air traffic control software.
     Some essential files to start TSAFE. (splash screen, icon..)
 
  *  `.classpath, .project, build.xml`
-    Eclipse project files.
+    Eclipse project files and ant tasks.
 
  *  `default_tsafe.properties, tsafe.properties`
     Configuration files.
@@ -39,7 +40,7 @@ Importing the Project in Eclipse:
  2.  File -> Import
  3.  Choose `General` -> `Existing Projects into Workspace` and click on `Next`
  4.  Enter the path to the cloned repository and click on `Finish`
- 5.  The project will appear in the Package Explorer under the name `Tsafe Project`
+ 5.  The project will appear in the Package Explorer under the name `TSafe`
 
 
 ## Running TSAFE from the CLI
