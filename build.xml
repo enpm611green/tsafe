@@ -1,60 +1,81 @@
-<project name="tsafe.makejar" default="makejar" basedir=".">
+<?xml version="1.0"?>
+<project name="TSAFE" default="main" basedir=".">
 
-	<target name ="makejar" description="Create a jar for the TSafe project">
+  <property name="src.dir"      value="src"/>
 
-		<delete dir="build"/>
+  <property name="build.dir"    value="build"/>
+  <property name="classes.dir"  value="${build.dir}/classes"/>
+  <property name="jar.dir"      value="${build.dir}/jar"/>
+  <property name="lib.dir"      value="lib"/>
+  <property name="doc.dir"      value="doc"/>
+  <property name="data.dir"     value="${build.dir}/datafiles"/>
 
-		<mkdir dir="build"/>
+  <property name="main-class"   value="tsafe.main.Main"/>
 
-		<copy todir="build/datafiles">
-			<fileset dir="datafiles/">
-				<include name="**"/>
-			</fileset>
-		</copy>
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+  </path>
 
-		<copy todir="build/lib">
-			<fileset dir="lib/">
-				<include name="figio.jar"/>
-				<include name="feed_server.jar"/>
-			</fileset>
-		</copy>
+  <target name="clean" description="Delete all generated files">
+    <delete dir="${build.dir}"/>
+    <delete dir="${doc.dir}"/>
+    <mkdir dir="${doc.dir}"/>
+    <touch file="${doc.dir}/.gitkeep"/>
+  </target>
 
-		<copy todir="build">
-			<fileset dir=".">
-				<include name="tsafe.properties"/>
-			</fileset>
-		</copy>
+  <target name="compile" description="Compile TSafe">
+    <mkdir dir="${classes.dir}"/>
+    <javac includeAntRuntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+    <copy todir="${classes.dir}">
+      <fileset dir="${src.dir}" includes="**/*.gif,**/*.jpg,**/*.properties"/>
+    </copy>
+  </target>
 
-		<jar jarfile="TSafe2d.jar" includes="**/*.class" basedir=".">
-			<manifest>
-				<attribute name="Main-Class" value="tsafe.main.Main"/>
-				<attribute name="Class-Path" value="lib/figio.jar lib/feed_server.jar"/>
-			</manifest>
+  <target name="jar" description="Create a jar for the TSafe project" depends="compile">
 
-			<fileset dir="">
-				<include name="tsafe/common_datastructures/_resources/**"/>
-			</fileset>
-		</jar>
+    <mkdir dir="${jar.dir}"/>
 
-		<move file="TSafe2d.jar" todir="build/"/>
+    <copy todir="${data.dir}">
+      <fileset dir="datafiles/">
+        <include name="**"/>
+      </fileset>
+    </copy>
 
-	</target>
+    <copy todir="build">
+      <fileset dir=".">
+        <include name="tsafe.properties"/>
+      </fileset>
+    </copy>
 
-	<target name="doc" description="Generate documentation">
-		<delete dir="doc"/>
-		<mkdir dir="doc"/>
-		<touch file="doc/.gitkeep"/>
-		<javadoc sourcepath="tsafe" destdir="doc">
-			<fileset dir="tsafe">
-				<include name="**/*.java"/>
-			</fileset>
-		</javadoc>
-	</target>
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+      <manifest>
+        <attribute name="Main-Class" value="${main-class}"/>
+      </manifest>
+    </jar>
+  </target>
 
-	<target name="clean" description="Delete all generated files">
-		<delete dir="build"/>
-		<delete dir="doc"/>
-		<mkdir dir="doc"/>
-		<touch file="doc/.gitkeep"/>
-	</target>
+  <target name="doc" description="Generate documentation">
+    <delete dir="${doc.dir}"/>
+    <mkdir dir="${doc.dir}"/>
+    <touch file="${doc.dir}/.gitkeep"/>
+    <javadoc sourcepath="tsafe" destdir="${doc.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.java"/>
+      </fileset>
+    </javadoc>
+  </target>
+
+  <target name="clean-build" depends="clean,jar"/>
+
+  <target name="main" depends="clean,run"/>
+
+  <target name="run" description="Run TSafe" depends="jar">
+    <java classname="${main-class}" fork="true">
+      <classpath>
+        <path refid="classpath"/>
+        <path location="${jar.dir}/${ant.project.name}.jar"/>
+      </classpath>
+    </java>
+  </target>
+
 </project>
