@@ -3,7 +3,6 @@ doc/*
 build
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
@@ -31,8 +30,3 @@ local.properties
 
 # PDT-specific
 .buildpath
-
-# Exceptions #
-
-!feed_server.jar
-!lib/figio.jar
