@@ -85,7 +85,7 @@
     </java>
   </target>
 
-  <target name="junit" depends="jar" description="Run all the junit tests">
+  <target name="test" depends="jar" description="Run all the junit tests">
     <junit printsummary="yes">
       <classpath>
         <path refid="classpath"/>
