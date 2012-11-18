@@ -47,9 +47,7 @@ public class TextParserTest {
     TextParser textP = new TextParser("Show Flights All", null);
     tsafe.client.text_client.TextParser.ReturnType rType = textP.getTextType();
     System.out.println(rType);
-    assertTrue(rType.toString() == "Valid");
-
-    //fail("Not yet implemented"); // TODO
+    assertTrue(rType.toString().compareTo("Valid") == 0);
   }
 
   @Test
