@@ -14,11 +14,11 @@ import tsafe.common_datastructures.FlightTrack;
 
 public class CommandPromptTest {
   @SuppressWarnings("unchecked")
-  private Collection<Flight> SetUpCommandPrompt(Collection<Flight> flights) {
+  private Collection<Flight> SetUpCommandPrompt(Collection<Flight> flights, String prompt) {
     CommandPrompt cp = new CommandPrompt(null, null, null);
 
     cp.setFlights(flights);
-    TextParser tp = new TextParser("select id", flights);
+    TextParser tp = new TextParser(prompt, flights);
 
     try {
       Method method = cp.getClass().getDeclaredMethod("GetSelectFlights",
@@ -42,7 +42,7 @@ public class CommandPromptTest {
   
   @Test
   public void testGetSelectedFlightsNone() {
-    Collection<Flight> fl = SetUpCommandPrompt(new Vector<Flight>());
+    Collection<Flight> fl = SetUpCommandPrompt(new Vector<Flight>(), "");
     
     assertTrue(fl.size() == 0);
   }
@@ -52,9 +52,27 @@ public class CommandPromptTest {
     Vector<Flight> flights  = new Vector<Flight>();
     flights.add(new Flight("id", new FlightTrack(1, 1, 1, 1, 1, 1)));
     
-    Collection<Flight> fl = SetUpCommandPrompt(flights);
+    Collection<Flight> fl = SetUpCommandPrompt(flights, "select id");
     
     assertTrue(fl.size() == 1);
     assertTrue(fl.toArray()[0].equals(flights.get(0)));
+  }
+  
+  // Text client throws a null exception
+  @Test
+  public void testGetSelectedFlightsWrongId() {
+    Vector<Flight> flights  = new Vector<Flight>();
+    flights.add(new Flight("id", new FlightTrack(1, 1, 1, 1, 1, 1)));
+    
+    Collection<Flight> fl = null;
+    
+    try {
+      fl = SetUpCommandPrompt(flights, "select wrong");
+      assert(false); // no exception?
+    }
+    catch (NullPointerException e) {
+      assert(true); // To be expected.
+    }
+    assertTrue(fl == null);
   }
 }
