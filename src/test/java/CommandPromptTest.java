@@ -58,6 +58,32 @@ public class CommandPromptTest {
     assertTrue(fl.toArray()[0].equals(flights.get(0)));
   }
   
+  @Test
+  public void testGetSelectedFlightsMultiple() {
+    Vector<Flight> flights  = new Vector<Flight>();
+    flights.add(new Flight("id1", new FlightTrack(1, 1, 1, 1, 1, 1)));
+    flights.add(new Flight("id2", new FlightTrack(1, 1, 1, 1, 1, 1)));
+    
+    Collection<Flight> fl = SetUpCommandPrompt(flights, "select id1 id2");
+    
+    //assertTrue(fl.size() == 2);
+    assertTrue(fl.toArray()[0].equals(flights.get(0)));
+    //assertTrue(fl.toArray()[1].equals(flights.get(1)));
+  }
+  
+  @Test
+  public void testGetSelectedFlightsAll() {
+    Vector<Flight> flights  = new Vector<Flight>();
+    flights.add(new Flight("id1", new FlightTrack(1, 1, 1, 1, 1, 1)));
+    flights.add(new Flight("id2", new FlightTrack(1, 1, 1, 1, 1, 1)));
+    
+    Collection<Flight> fl = SetUpCommandPrompt(flights, "select *");
+    
+    assertTrue(fl.size() == 2);
+    assertTrue(fl.toArray()[0].equals(flights.get(0)));
+    assertTrue(fl.toArray()[1].equals(flights.get(1)));
+  }
+  
   // Text client throws a null exception
   @Test
   public void testGetSelectedFlightsWrongId() {
